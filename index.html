@@ -1,6 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBqJaGisSDMrmHQMWq6BL7_MztWKOj8CcE",
+    authDomain: "onlinenotes-e2e5a.firebaseapp.com",
+    projectId: "onlinenotes-e2e5a",
+    storageBucket: "onlinenotes-e2e5a.appspot.com",
+    messagingSenderId: "807757549920",
+    appId: "1:807757549920:web:58578120d984841138ce05",
+    measurementId: "G-YLMGKWY3YW"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Login and Notes App</title>
