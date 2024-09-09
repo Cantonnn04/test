@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Online Notes</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Online Notes</h1>
@@ -21,123 +22,34 @@
   <!-- Notes Section -->
   <div class="notes-section" id="notes-section">
     <h2>Your Notes</h2>
-    <textarea id="note" rows="10" cols="50" placeholder="Write your note here..."></textarea><br>
-    <button id="save-note">Save Note</button>
-    <p id="save-status"></p>
+
+    <!-- Create New Note Button -->
+    <button id="create-note-btn">Create New Note</button>
+    
+    <!-- New Note Creation Form -->
+    <div id="new-note-section" style="display:none;">
+      <input type="text" id="note-title" placeholder="Note Title"><br>
+      <textarea id="note-content" rows="10" cols="50" placeholder="Write your note here..."></textarea><br>
+      <button id="save-new-note">Create & Save Note</button>
+    </div>
+
+    <!-- List of Notes -->
     <h3>Saved Notes:</h3>
     <ul id="notes-list"></ul>
+
+    <!-- Edit Existing Note Section -->
+    <div id="edit-note-section" style="display:none;">
+      <h3>Edit Note: <span id="edit-note-title"></span></h3>
+      <textarea id="edit-note-content" rows="10" cols="50"></textarea><br>
+      <button id="save-note">Save Changes</button>
+    </div>
+
+    <!-- Logout -->
     <button id="logout">Logout</button>
+    <p id="save-status"></p>
   </div>
 
   <!-- Firebase SDK and Your Scripts -->
-  <script type="module">
-    // Import the Firebase functions from SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-
-    // Your Firebase configuration
-    const firebaseConfig = {
-  apiKey: "AIzaSyBqJaGisSDMrmHQMWq6BL7_MztWKOj8CcE",
-  authDomain: "onlinenotes-e2e5a.firebaseapp.com",
-  projectId: "onlinenotes-e2e5a",
-  storageBucket: "onlinenotes-e2e5a.appspot.com",
-  messagingSenderId: "807757549920",
-  appId: "1:807757549920:web:58578120d984841138ce05",
-  measurementId: "G-YLMGKWY3YW"
-};
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // DOM Elements
-    const emailField = document.getElementById('email');
-    const passwordField = document.getElementById('password');
-    const signupButton = document.getElementById('signup');
-    const loginButton = document.getElementById('login');
-    const authError = document.getElementById('auth-error');
-    const authSection = document.getElementById('auth-section');
-    const notesSection = document.getElementById('notes-section');
-    const noteField = document.getElementById('note');
-    const saveButton = document.getElementById('save-note');
-    const saveStatus = document.getElementById('save-status');
-    const notesList = document.getElementById('notes-list');
-    const logoutButton = document.getElementById('logout');
-
-    // Handle Sign-Up
-    signupButton.addEventListener('click', async () => {
-      const email = emailField.value;
-      const password = passwordField.value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        authError.textContent = error.message;
-      }
-    });
-
-    // Handle Login
-    loginButton.addEventListener('click', async () => {
-      const email = emailField.value;
-      const password = passwordField.value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        authError.textContent = error.message;
-      }
-    });
-
-    // Listen for Authentication State Changes
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Show notes section and hide auth section
-        authSection.classList.remove('active');
-        notesSection.classList.add('active');
-
-        // Fetch and display notes
-        const userNotesDoc = doc(db, "notes", user.uid);
-        const userNotes = await getDoc(userNotesDoc);
-        if (userNotes.exists()) {
-          noteField.value = userNotes.data().note;
-        }
-
-        // Realtime updates
-        onSnapshot(userNotesDoc, (doc) => {
-          notesList.innerHTML = '';
-          if (doc.exists()) {
-            const noteData = doc.data();
-            const noteElement = document.createElement('li');
-            noteElement.textContent = noteData.note;
-            notesList.appendChild(noteElement);
-          }
-        });
-
-      } else {
-        // Show auth section and hide notes section
-        authSection.classList.add('active');
-        notesSection.classList.remove('active');
-      }
-    });
-
-    // Handle Note Saving
-    saveButton.addEventListener('click', async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const noteText = noteField.value;
-        try {
-          await setDoc(doc(db, "notes", user.uid), { note: noteText });
-          saveStatus.textContent = 'Note saved!';
-        } catch (error) {
-          saveStatus.textContent = 'Error saving note: ' + error.message;
-        }
-      }
-    });
-
-    // Handle Logout
-    logoutButton.addEventListener('click', () => {
-      signOut(auth);
-    });
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
