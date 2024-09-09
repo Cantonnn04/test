@@ -1,12 +1,12 @@
-<style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    .auth-section, .notes-section {
-      display: none;
-    }
-    .auth-section.active, .notes-section.active {
-      display: block;
-    }
-  </style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.auth-section, .notes-section {
+  display: none;
+}
+
+.auth-section.active, .notes-section.active {
+  display: block;
+}
