@@ -7,8 +7,28 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Initial Screen (Create Account / Login) -->
+    <div id="initial-container">
+        <h2>Welcome!</h2>
+        <button id="create-account-btn">Create Account</button><br><br>
+        <button id="go-to-login-btn">Login</button>
+    </div>
+
+    <!-- Create Account Form -->
+    <div id="create-account-container" style="display: none;">
+        <h2>Create Account</h2>
+        <label for="new-username">Username:</label>
+        <input type="text" id="new-username" required><br><br>
+
+        <label for="new-password">Password:</label>
+        <input type="password" id="new-password" required><br><br>
+
+        <button id="create-account-submit-btn">Create Account</button>
+        <p id="create-error-msg"></p>
+    </div>
+
     <!-- Login Form -->
-    <div id="login-container">
+    <div id="login-container" style="display: none;">
         <h2>Login</h2>
         <label for="username">Username:</label>
         <input type="text" id="username" required><br><br>
@@ -16,8 +36,8 @@
         <label for="password">Password:</label>
         <input type="password" id="password" required><br><br>
 
-        <button id="login-btn">Login / Register</button>
-        <p id="error-msg"></p>
+        <button id="login-btn">Login</button>
+        <p id="login-error-msg"></p>
     </div>
 
     <!-- Notes Section -->
