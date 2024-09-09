@@ -6,7 +6,7 @@ body {
     background-color: #f5f5f5;
 }
 
-#login-container, #notes-container {
+#initial-container, #create-account-container, #login-container, #notes-container {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
@@ -41,7 +41,7 @@ button:hover {
     background-color: #45a049;
 }
 
-#error-msg {
+#error-msg, #login-error-msg, #create-error-msg {
     color: red;
     text-align: center;
 }
