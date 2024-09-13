@@ -1,4 +1,4 @@
-<script type="module">
+
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
@@ -8,18 +8,16 @@
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
-    apiKey: "AIzaSyC_15aoMvS21YXI28zMDLJC_fl5aRdwnq0",
-    authDomain: "project-2141e.firebaseapp.com",
-    projectId: "project-2141e",
-    storageBucket: "project-2141e.appspot.com",
-    messagingSenderId: "608040618536",
-    appId: "1:608040618536:web:a41a6e0c6a5decbf5b031d",
-    measurementId: "G-DZBS9BYVT0"
+    apiKey: "AIzaSyDrbYN-8Iuq503KC4JooYzArA_6z_Fvewo",
+    authDomain: "main-4cda0.firebaseapp.com",
+    projectId: "main-4cda0",
+    storageBucket: "main-4cda0.appspot.com",
+    messagingSenderId: "586786204464",
+    appId: "1:586786204464:web:ae4fdefed0bd566d4276f5",
+    measurementId: "G-EVGZQK94C2"
   };
 
   // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
@@ -111,4 +109,3 @@ returnBtn.addEventListener("click", function() {
     main.style.display = "block";
     createacct.style.display = "none";
 });
-</script>
