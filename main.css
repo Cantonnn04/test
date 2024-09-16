@@ -1,5 +1,7 @@
+/* Importing a custom font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
+/* Resets the box-sizing model and removes default margins and padding */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,10 +9,12 @@
   font-family: sans-serif;
 }
 
+/* Styling the background of the entire page */
 body {
   background-color: #004762;
 }
 
+/* Styling the heading elements */
 h1 {
   margin-bottom: 8%;
   text-align: center;
@@ -19,6 +23,7 @@ h1 {
   letter-spacing: 0.1em;
 }
 
+/* Styling paragraph elements */
 p {
   margin-top: 5%;
   margin-bottom: 5%;
@@ -28,36 +33,40 @@ p {
   line-height: 0.1em;
 }
 
+/* Styling the span inside the paragraph */
 p span {
-  background:#fff;
-  padding:0 10px;
+  background: #fff;
+  padding: 0 10px;
 }
 
+/* Styling the input fields */
 input {
   margin-bottom: 3%;
 }
 
+/* Removing the margin from the last input field */
 input:last-of-type {
   margin-bottom: 0;
 }
 
+/* Styling both input fields and buttons */
 input, button {
   padding: 3%;
   width: 100%;
 }
 
+/* Styling the login/signup container */
 .login-container {
   background-color: rgb(0, 131, 202);
   padding: 7%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  /* horizontal align */
   width: 80vw;
   margin-left: 30vw;
-  /* vertical align */
   height: 70vh;
   margin-top: 15vh;
 }
 
+/* Styling the submit and create account buttons */
 #submit, #create-acct-btn {
   background-color: #0583D2;
   color: white;
@@ -65,20 +74,24 @@ input, button {
   margin-top: 5%;
 }
 
+/* Styling buttons when hovered over */
 button:hover {
   cursor: pointer;
   opacity: 0.8;
   transition: 0.3s;
 }
 
+/* Styling the signup button (without border) */
 #sign-up {
   border: none;
 }
 
+/* Hiding the signup container by default */
 #create-acct {
   display: none;
 }
 
+/* Styling the return button in the signup form */
 #return-btn {
   background: none;
   color: grey;

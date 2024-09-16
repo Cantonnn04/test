@@ -1,30 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Title of the page -->
   <title>Login</title>
-  <link rel = "stylesheet" href = "main.css">
+  <!-- Linking to the external CSS file for styling -->
+  <link rel="stylesheet" href="main.css">
 </head>
 <body>
-  <div class = "login-container">
-    <div id= "main">
+  <!-- Container for the login and signup forms -->
+  <div class="login-container">
+    
+    <!-- Login form container -->
+    <div id="main">
       <h1>Sign In</h1>
-      <input id = "email" type = "text" placeholder = "Email"></input>
-      <input id = "password" type = "password" placeholder = "Password"></input>
-      <button id = "submit">Login</button>
+      <!-- Input field for email -->
+      <input id="email" type="text" placeholder="Email"></input>
+      <!-- Input field for password -->
+      <input id="password" type="password" placeholder="Password"></input>
+      <!-- Button to submit login form -->
+      <button id="submit">Login</button>
+      <!-- Divider with "or" text between login and signup options -->
       <p><span>or</span></p>
-      <button id = "sign-up">Sign Up</button>
+      <!-- Button to switch to the signup form -->
+      <button id="sign-up">Sign Up</button>
     </div>
 
-    <div id = "create-acct">
+    <!-- Signup form container, hidden by default -->
+    <div id="create-acct">
       <h1>Create an Account</h1>
-      <input id = "email-signup" type = "text" placeholder = "Email *"></input>
-  <input id = "confirm-email-signup" type = "email" placeholder = "Confirm Email *"></input>
-      <input id = "password-signup" type = "password" placeholder = "Password *"></input>
-      <input id = "confirm-password-signup" type = "password" placeholder = "Confirm Password *"></input>
-      <button id = "create-acct-btn">Create Account</button>
-      <button id = "return-btn">Return to Login</button>
+      <!-- Input fields for signup form -->
+      <input id="email-signup" type="text" placeholder="Email *"></input>
+      <input id="confirm-email-signup" type="email" placeholder="Confirm Email *"></input>
+      <input id="password-signup" type="password" placeholder="Password *"></input>
+      <input id="confirm-password-signup" type="password" placeholder="Confirm Password *"></input>
+      <!-- Button to create an account -->
+      <button id="create-acct-btn">Create Account</button>
+      <!-- Button to return to the login form -->
+      <button id="return-btn">Return to Login</button>
     </div>
   </div>
-  <script type = "module" src = "script.js"></script>
+  <!-- Linking to the external JavaScript file -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
