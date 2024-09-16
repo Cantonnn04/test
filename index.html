@@ -9,7 +9,6 @@
 <body>
   <!-- Container for the login and signup forms -->
   <div class="login-container">
-    
     <!-- Login form container -->
     <div id="main">
       <h1>Sign In</h1>
@@ -39,6 +38,13 @@
       <button id="return-btn">Return to Login</button>
     </div>
   </div>
+
+  <!-- Container for the editable textbox, hidden by default -->
+  <div id="user-section" style="display: none;">
+    <h2>Welcome, <span id="user-email"></span>!</h2>
+    <textarea id="user-textbox" placeholder="Type something here..."></textarea>
+  </div>
+
   <!-- Linking to the external JavaScript file -->
   <script type="module" src="script.js"></script>
 </body>

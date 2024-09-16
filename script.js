@@ -83,6 +83,9 @@ createacctbtn.addEventListener("click", function() {
   }
 });
 
+const userSection = document.getElementById("user-section");
+const userEmailSpan = document.getElementById("user-email");
+
 // Event listener for the login button
 submitButton.addEventListener("click", function() {
   email = emailInput.value;
@@ -95,6 +98,14 @@ submitButton.addEventListener("click", function() {
       const user = userCredential.user;
       console.log("Success! Welcome back!");
       window.alert("Success! Welcome back!");
+
+      // Hide the login/signup form and show the user section
+      main.style.display = "none";
+      createacct.style.display = "none";
+      userSection.style.display = "block";
+      
+      // Set the email in the user section
+      userEmailSpan.textContent = user.email;
     })
     .catch((error) => {
       // Handle errors during login
@@ -116,3 +127,5 @@ returnBtn.addEventListener("click", function() {
   main.style.display = "block";  // Show the login form
   createacct.style.display = "none";  // Hide the signup form
 });
+
+
