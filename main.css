@@ -58,14 +58,21 @@ input, button {
 /* Styling the login/signup container */
 .login-container {
   background-color: #0583D2;
-  padding: 7%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-top: 3%;
+  padding-bottom: 2%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   width: 60vw;
   margin-left: auto;
   margin-right: auto;
-  height: auto; /* Set height to auto to allow dynamic adjustment */
-  min-height: 70vh; /* Set a minimum height */
-  transition: height 0.3s ease; /* Add a smooth transition effect */
+  margin-top: 3vh;
+  margin-bottom: 2.5vh;
+  min-height: 80vh;
+  max-height: 180vh;
+  overflow: hidden;
+  position: relative; /* Add position relative */
+  transition: height 0.5s ease; /* Smooth transition for height */
 }
 
 /* Styling the submit and create account buttons */
@@ -96,7 +103,7 @@ button:hover {
 /* Styling the return button in the signup form */
 #return-btn {
   background: none;
-  color: grey;
+  color: black;
   text-decoration: underline;
   border: none;
   margin-top: 3%;
