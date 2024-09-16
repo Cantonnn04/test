@@ -57,13 +57,13 @@ input, button {
 
 /* Styling the login/signup container */
 .login-container {
-  background-color: rgb(0, 131, 202);
+  background-color: #0583D2;
   padding: 7%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   width: 60vw;
   margin-left: auto;
   margin-right: auto;
-  height: 90vh;
+  height: 80vh;
   margin-top: 15vh;
 }
 
