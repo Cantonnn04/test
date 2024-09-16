@@ -35,7 +35,7 @@ p {
 
 /* Styling the span inside the paragraph */
 p span {
-  background: #fff;
+  background: #0583D2;
   padding: 0 10px;
 }
 
@@ -63,7 +63,7 @@ input, button {
   width: 60vw;
   margin-left: auto;
   margin-right: auto;
-  height: 70vh;
+  height: 90vh;
   margin-top: 15vh;
 }
 
