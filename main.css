@@ -63,13 +63,14 @@ input, button {
   width: 60vw;
   margin-left: auto;
   margin-right: auto;
-  height: 80vh;
-  margin-top: 7vh;
+  height: auto; /* Set height to auto to allow dynamic adjustment */
+  min-height: 70vh; /* Set a minimum height */
+  transition: height 0.3s ease; /* Add a smooth transition effect */
 }
 
 /* Styling the submit and create account buttons */
 #submit, #create-acct-btn {
-  background-color: #0583D2;
+  background-color: #03598e;
   color: white;
   border: none;
   margin-top: 5%;
