@@ -68,11 +68,9 @@ input, button {
   margin-right: auto;
   margin-top: 3vh;
   margin-bottom: 2.5vh;
-  min-height: 80vh;
-  max-height: 180vh;
+  height: auto;
+  border-style: inset;
   overflow: hidden;
-  position: relative; /* Add position relative */
-  transition: height 0.5s ease; /* Smooth transition for height */
 }
 
 /* Styling the submit and create account buttons */
