@@ -117,13 +117,3 @@ button:hover {
   margin-left: auto;
   margin-right: auto;
 }
-
-/* Styling the editable textbox */
-#user-textbox {
-  width: 100%;
-  height: 200px;
-  padding: 1%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
