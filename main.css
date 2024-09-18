@@ -93,8 +93,17 @@ button:hover {
   border: none;
 }
 
+/* Styling the reset-password button*/
+#reset-password {
+  border: none;
+}
+
 /* Hiding the signup container by default */
 #create-acct {
+  display: none;
+}
+
+#reset-pass {
   display: none;
 }
 

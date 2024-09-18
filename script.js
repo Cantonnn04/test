@@ -26,7 +26,7 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const main = document.getElementById("main");
 const createacct = document.getElementById("create-acct");
-
+const passwordReset = document.getElementById("reset-password");
 const signupEmailIn = document.getElementById("email-signup");
 const confirmSignupEmailIn = document.getElementById("confirm-email-signup");
 const signupPasswordIn = document.getElementById("password-signup");
@@ -85,6 +85,15 @@ createacctbtn.addEventListener("click", function() {
 
 const userSection = document.getElementById("user-section");
 const userEmailSpan = document.getElementById("user-email");
+const passSection = document.getElementById("reset-pass");
+
+// Event listener for the reset password button
+passwordReset.addEventListener("click", function() {
+  main.style.display = "none";
+  createacct.style.display = "none";
+  passSection.style.display = "block";
+});
+
 
 // Event listener for the login button
 submitButton.addEventListener("click", function() {
@@ -126,6 +135,9 @@ signupButton.addEventListener("click", function() {
 returnBtn.addEventListener("click", function() {
   main.style.display = "block";  // Show the login form
   createacct.style.display = "none";  // Hide the signup form
+  passSection.style.display = "none"; // Hide the password reset form
 });
+
+
 
 
