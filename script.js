@@ -1,7 +1,7 @@
 // Import the Firebase functions needed for authentication and analytics
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
 // Firebase configuration object with API keys and project information
 const firebaseConfig = {
@@ -75,6 +75,11 @@ createacctbtn.addEventListener("click", function() {
       .then((userCredential) => {
         // User successfully signed up
         const user = userCredential.user;
+        sendEmailVerification(auth.currentUser)
+          .then(() => {
+          // Email verification sent!
+          // ...
+          });
         window.alert("Success! Account created.");
       })
       .catch((error) => {
@@ -108,16 +113,29 @@ submitButton.addEventListener("click", function() {
     .then((userCredential) => {
       // User successfully signed in
       const user = userCredential.user;
-      console.log("Success! Welcome back!");
-      window.alert("Success! Welcome back!");
 
-      // Hide the login/signup form and show the user section
-      main.style.display = "none";
-      createacct.style.display = "none";
-      userSection.style.display = "block";
-      
-      // Set the email in the user section
-      userEmailSpan.textContent = user.email;
+      // Check if the email is verified
+      if (user.emailVerified) {
+        console.log("Success! Welcome back!");
+        window.alert("Success! Welcome back!");
+
+        // Hide the login/signup form and show the user section
+        main.style.display = "none";
+        createacct.style.display = "none";
+        userSection.style.display = "block";
+        
+        // Set the email in the user section
+        userEmailSpan.textContent = user.email;
+      } else {
+        // If email is not verified, sign out the user and show a message
+        window.alert("Please verify your email before logging in. We have sent an additional verification email.");
+        sendEmailVerification(auth.currentUser)
+          .then(() => {
+          // Email verification sent!
+          // ...
+          });
+        auth.signOut();  // Sign out the user
+      }
     })
     .catch((error) => {
       // Handle errors during login
