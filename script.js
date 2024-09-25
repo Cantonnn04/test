@@ -173,7 +173,7 @@ resetEmailButton.addEventListener("click", function() {
   sendPasswordResetEmail(auth, email)
     .then(() => {
       // Password reset email sent successfully
-      window.alert("Password reset email sent! Check your inbox.");
+      window.alert("Password reset email sent to the provided email! Check your inbox.");
     })
     .catch((error) => {
       // Handle any errors that occur during the process
