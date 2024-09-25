@@ -116,6 +116,14 @@ button:hover {
   margin-top: 3%;
 }
 
+#return-btn-pass {
+  background: none;
+  color: black;
+  text-decoration: underline;
+  border: none;
+  margin-top: 3%;
+}
+
 /* Styling for the user section */
 #user-section {
   margin-top: 2%;

@@ -33,6 +33,7 @@ const signupPasswordIn = document.getElementById("password-signup");
 const confirmSignUpPasswordIn = document.getElementById("confirm-password-signup");
 const createacctbtn = document.getElementById("create-acct-btn");
 const returnBtn = document.getElementById("return-btn");
+const returnBtnPass = document.getElementById("return-btn-pass")
 
 var email, password, signupEmail, signupPassword, confirmSignupEmail, confirmSignUpPassword;
 
@@ -137,6 +138,12 @@ returnBtn.addEventListener("click", function() {
   createacct.style.display = "none";  // Hide the signup form
   passSection.style.display = "none"; // Hide the password reset form
 });
+
+returnBtnPass.addEventListener("click", function(){
+  main.style.display = "block";  // Show the login form
+  createacct.style.display = "none";  // Hide the signup form
+  passSection.style.display = "none"; // Hide the password reset form
+})
 
 
 
