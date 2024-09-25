@@ -1,7 +1,7 @@
 // Import the Firebase functions needed for authentication and analytics
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
 // Firebase configuration object with API keys and project information
 const firebaseConfig = {
@@ -34,6 +34,8 @@ const confirmSignUpPasswordIn = document.getElementById("confirm-password-signup
 const createacctbtn = document.getElementById("create-acct-btn");
 const returnBtn = document.getElementById("return-btn");
 const returnBtnPass = document.getElementById("return-btn-pass")
+const resetEmailInput = document.getElementById("reset-email-input") // Email input in password reset screen
+const resetEmailButton = document.getElementById("reset-email") //Reset Password button
 
 var email, password, signupEmail, signupPassword, confirmSignupEmail, confirmSignUpPassword;
 
@@ -139,10 +141,28 @@ returnBtn.addEventListener("click", function() {
   passSection.style.display = "none"; // Hide the password reset form
 });
 
+// Event listener for returning to the login form from the password reset form
 returnBtnPass.addEventListener("click", function(){
   main.style.display = "block";  // Show the login form
   createacct.style.display = "none";  // Hide the signup form
   passSection.style.display = "none"; // Hide the password reset form
+})
+
+// Event listener for sending password reset email
+resetEmailButton.addEventListener("click", function() {
+  const email = resetEmailInput.value;  // Get the email input from the form
+  
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent successfully
+      window.alert("Password reset email sent! Check your inbox.");
+    })
+    .catch((error) => {
+      // Handle any errors that occur during the process
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      window.alert(`Error: ${errorMessage}`);
+    });
 })
 
 
