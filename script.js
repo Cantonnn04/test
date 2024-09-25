@@ -86,7 +86,7 @@ createacctbtn.addEventListener("click", function() {
         // Handle errors during signup
         const errorCode = error.code;
         const errorMessage = error.message;
-        window.alert("Error occurred. Try again.");
+        window.alert("Error occurred. Try again. Make sure your password is at least 6 characters.");
       });
   }
 });
