@@ -36,6 +36,7 @@ const returnBtn = document.getElementById("return-btn");
 const returnBtnPass = document.getElementById("return-btn-pass")
 const resetEmailInput = document.getElementById("reset-email-input") // Email input in password reset screen
 const resetEmailButton = document.getElementById("reset-email") //Reset Password button
+const loginContainer = document.querySelector('.login-container');
 
 var email, password, signupEmail, signupPassword, confirmSignupEmail, confirmSignUpPassword;
 
@@ -120,8 +121,7 @@ submitButton.addEventListener("click", function() {
         window.alert("Success! Welcome back!");
 
         // Hide the login/signup form and show the user section
-        main.style.display = "none";
-        createacct.style.display = "none";
+        loginContainer.style.display = "none";
         userSection.style.display = "block";
         
         // Set the email in the user section
