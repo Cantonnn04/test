@@ -768,8 +768,10 @@ let testKeys       = {};
 let testDeaths     = 0;
 let testVictory    = false;
 let testRaf        = null;
+let testLastTime   = null, testAccumulator = 0;
 
 const T_SPEED = 3.5, T_JUMP = -9, T_GRAVITY = 0.45;
+const T_TICK_MS = 1000 / 60;
 
 function buildTestLevel() {
   const pl = objects.filter(o => o.type === 'platform');
@@ -938,9 +940,13 @@ function testDraw() {
   }
 }
 
-function testLoop() {
+function testLoop(ts) {
   if (!testMode) return;
-  testUpdate();
+  const now = ts || performance.now();
+  if (testLastTime === null) testLastTime = now;
+  testAccumulator += Math.min(now - testLastTime, 200);
+  testLastTime = now;
+  while (testAccumulator >= T_TICK_MS) { testUpdate(); testAccumulator -= T_TICK_MS; }
   testDraw();
   testRaf = requestAnimationFrame(testLoop);
 }
@@ -958,6 +964,8 @@ function startTest() {
   testDeaths  = 0;
   testVictory = false;
   testRidingMover = null;
+  testLastTime = null;
+  testAccumulator = 0;
   testMode    = true;
 
   document.getElementById('test-btn').textContent = '■ STOP TEST';
