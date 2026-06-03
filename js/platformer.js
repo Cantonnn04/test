@@ -72,8 +72,10 @@ const LEVELS = [
 
 
 const SPEED=3.5, JUMP=-9, GRAVITY=0.45;
+const TICK_MS = 1000 / 60;
 let level=0, player, player2=null, keys={}, raf, victory=false, deaths=0, usedNav=false, twoPlayer=false, coopMode=false;
 let mState=[], bState=[], ridingMover=null, ridingMover2=null;
+let lastTime=null, accumulator=0;
 
 function initMoving(lvl){
   const L=LEVELS[lvl];
@@ -431,7 +433,15 @@ function draw(){
   }
 }
 
-function loop(){ update(); draw(); raf=requestAnimationFrame(loop); }
+function loop(ts) {
+  const now = ts || performance.now();
+  if (lastTime === null) lastTime = now;
+  accumulator += Math.min(now - lastTime, 200); // cap prevents spiral of death after tab switch
+  lastTime = now;
+  while (accumulator >= TICK_MS) { update(); accumulator -= TICK_MS; }
+  draw();
+  raf = requestAnimationFrame(loop);
+}
 
 document.addEventListener('keydown', e=>{
   if((e.key==='r'||e.key==='R')){
