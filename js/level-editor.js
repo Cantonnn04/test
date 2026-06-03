@@ -34,6 +34,7 @@ const DEFAULTS = {
   goal:     { w: 18, h: 18 },
   spawn:    { w: 24, h: 28 },
   turret:   { w: 24, h: 24 },
+  bounce:   { w: 24, h: 16 },
 };
 
 // ── Tool selection ──────────────────────────────────────────────────────
@@ -697,6 +698,25 @@ function drawObject(obj, alpha = 1) {
       ctx.fillText('★', obj.x + 2, obj.y + 22);
       break;
 
+    case 'bounce': {
+      const baseH = 4, coilH = obj.h - baseH, coilCount = 4;
+      ctx.fillStyle = '#33aa22';
+      ctx.fillRect(obj.x, obj.y + coilH, obj.w, baseH);
+      ctx.strokeStyle = '#ccff44'; ctx.lineWidth = 2;
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(obj.x + obj.w / 2, obj.y + coilH);
+      for (let i = 0; i < coilCount; i++) {
+        ctx.lineTo(i % 2 === 0 ? obj.x + obj.w - 3 : obj.x + 3, obj.y + coilH - (i + 0.5) * (coilH / coilCount));
+        ctx.lineTo(obj.x + obj.w / 2, obj.y + coilH - (i + 1) * (coilH / coilCount));
+      }
+      ctx.stroke();
+      ctx.fillStyle = '#ccff44';
+      ctx.fillRect(obj.x + 2, obj.y, obj.w - 4, 3);
+      break;
+    }
+
     case 'turret': {
       // Always drawn facing right; canvas rotation via obj.angle handles direction
       const tcy = obj.y + obj.h / 2;
@@ -916,6 +936,7 @@ function generateCode() {
   const ladders   = objects.filter(o => o.type === 'ladder');
   const portals   = objects.filter(o => o.type === 'portal');
   const turrets   = objects.filter(o => o.type === 'turret');
+  const springs   = objects.filter(o => o.type === 'bounce');
   const goal      = objects.find(o  => o.type === 'goal');
   const spawn     = objects.find(o  => o.type === 'spawn');
 
@@ -950,6 +971,11 @@ function generateCode() {
   if (ladders.length) {
     const arr = ladders.map(l => `{x:${l.x},y:${l.y},w:${l.w},h:${l.h}${ang(l)}}`).join(',');
     lines.push(`  ladders:[${arr}]`);
+  }
+
+  if (springs.length) {
+    const arr = springs.map(s => `{x:${s.x},y:${s.y},w:${s.w},h:${s.h}${ang(s)}}`).join(',');
+    lines.push(`  springs:[${arr}]`);
   }
 
   if (turrets.length) {
@@ -1050,6 +1076,7 @@ function buildTestLevel() {
     playerStart: spawn ? { x:spawn.x, y:spawn.y } : { x:20, y:300 },
     portals:   objects.filter(o => o.type === 'portal').map(o => ({ ...o })),
     turrets:   objects.filter(o => o.type === 'turret').map(o => ({ ...o })),
+    springs:   objects.filter(o => o.type === 'bounce').map(o => ({ ...o })),
   };
 }
 
@@ -1114,8 +1141,10 @@ function tPhysicsStep() {
     p.vy += T_GRAVITY;
   }
 
+  if (Math.abs(p.vx) > 0.3) p.facing = p.vx > 0 ? 1 : -1;
+
   const allPlats = tAllPlatforms();
-  const allWalls = [...(testLevel.walls || []), ...(testLevel.turrets || [])];
+  const allWalls = [...(testLevel.walls || []), ...(testLevel.turrets || []), ...(testLevel.springs || [])];
   const plats = allPlats.filter(o => !o.angle);
   const walls  = allWalls.filter(o => !o.angle);
 
@@ -1158,8 +1187,8 @@ function tPhysicsStep() {
     }
   }
 
-  // OBB resolution for rotated platforms and walls
-  for (const obj of [...allPlats.filter(o => o.angle), ...allWalls.filter(o => o.angle)]) {
+  // OBB resolution for rotated platforms and walls (springs handled separately)
+  for (const obj of [...allPlats.filter(o => o.angle), ...allWalls.filter(o => o.angle && o.type !== 'bounce')]) {
     const col = obbVsAABB(obj, p);
     if (!col) continue;
     p.x += col.nx * col.depth;
@@ -1173,6 +1202,46 @@ function tPhysicsStep() {
     } else {
       if (col.nx > 0 && p.vx < 0) p.vx = 0;
       if (col.nx < 0 && p.vx > 0) p.vx = 0;
+    }
+  }
+
+  // Spring bounce
+  for (const sp of (testLevel.springs || [])) {
+    const angle  = sp.angle || 0;
+    const topNx  = Math.sin(angle);           // spring's top-face normal in world space
+    const topNy  = -Math.cos(angle);
+    const launch = Math.abs(T_JUMP) * (angle ? 1.8 : 1.3);
+
+    let hit = false;
+    if (!angle) {
+      if (p.x < sp.x + sp.w && p.x + p.w > sp.x &&
+          Math.abs(p.y + p.h - sp.y) <= 2 && p.vy > -5) {
+        p.y = sp.y - p.h; hit = true;
+      }
+    } else {
+      const col = obbVsAABB(sp, p);
+      if (col) {
+        p.x += col.nx * col.depth;
+        p.y += col.ny * col.depth;
+        const dot = col.nx * topNx + col.ny * topNy;
+        if (dot > 0.5 && p.vx * topNx + p.vy * topNy < launch * 0.5) {
+          hit = true;
+        } else {
+          // Non-top face: solid wall response
+          if      (col.ny < -0.5) { if (p.vy > 0) p.vy = 0; p.onGround = true; }
+          else if (col.ny >  0.5) { if (p.vy < 0) p.vy = 0; }
+          else {
+            if (col.nx > 0 && p.vx < 0) p.vx = 0;
+            if (col.nx < 0 && p.vx > 0) p.vx = 0;
+          }
+        }
+      }
+    }
+    if (hit) {
+      p.vx = topNx * launch;
+      p.vy = topNy * launch;
+      p.onGround = false;
+      break;
     }
   }
 }
@@ -1309,10 +1378,11 @@ function testDraw() {
   for (const m of testMovers)
     drawObject({ ...m, type:'moving', dir: m.x0 !== null ? 'h' : 'v' });
 
-  // Walls, spikes, ladders, goal
+  // Walls, spikes, ladders, springs, goal
   for (const w of (L.walls||[]))   drawObject({ ...w, type:'wall' });
   for (const s of (L.spikes||[]))  drawObject({ ...s, type:'spike' });
   for (const l of (L.ladders||[])) drawObject({ ...l, type:'ladder' });
+  for (const s of (L.springs||[])) drawObject({ ...s, type:'bounce' });
   if (L.goal) drawObject({ ...L.goal, type:'goal' });
 
   // Portals
@@ -1378,7 +1448,7 @@ function startTest() {
   testLevel   = buildTestLevel();
   testMovers  = testLevel.moving.map(m => ({ ...m, dir: 1 }));
   const ps    = testLevel.playerStart;
-  testPlayer  = { x:ps.x, y:ps.y, w:24, h:28, vx:0, vy:0, onGround:false, onLadder:false };
+  testPlayer  = { x:ps.x, y:ps.y, w:24, h:28, vx:0, vy:0, onGround:false, onLadder:false, facing:1 };
   testDeaths     = 0;
   testVictory    = false;
   testRidingMover    = null;

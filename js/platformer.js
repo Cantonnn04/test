@@ -119,7 +119,7 @@ function initMoving(lvl){
   tState=(L.turrets||[]).map(t=>({...t,timer:Math.round(t.interval*60),projectiles:[]}));
 }
 
-function makePlayer(x,y){ return {x,y,w:24,h:28,vx:0,vy:0,onGround:false,onLadder:false}; }
+function makePlayer(x,y){ return {x,y,w:24,h:28,vx:0,vy:0,onGround:false,onLadder:false,facing:1}; }
 
 function updateNavUI(){
   document.getElementById('nav-label').textContent='LEVEL '+(level+1)+' / '+LEVELS.length;
@@ -223,7 +223,7 @@ function allPlatforms(){
 }
 
 function allWalls(){
-  return [...(LEVELS[level].walls||[]), ...(LEVELS[level].turrets||[])];
+  return [...(LEVELS[level].walls||[]), ...(LEVELS[level].turrets||[]), ...(LEVELS[level].springs||[])];
 }
 
 function die(p){
@@ -269,6 +269,8 @@ function physicsStep(p, goLeft, goRight, doJump, goUp, goDown, ridRef){
     p.vy+=GRAVITY;
   }
 
+  if(Math.abs(p.vx)>0.3) p.facing=p.vx>0?1:-1;
+
   const _ap=allPlatforms(), _aw=allWalls();
   const _apA=_ap.filter(o=>!o.angle), _awA=_aw.filter(o=>!o.angle);
 
@@ -307,14 +309,26 @@ function physicsStep(p, goLeft, goRight, doJump, goUp, goDown, ridRef){
       }
     }
   }
-  // OBB resolution for rotated objects
-  for(const obj of [..._ap.filter(o=>o.angle),..._aw.filter(o=>o.angle)]){
+  // OBB resolution for rotated objects (springs handled separately)
+  for(const obj of [..._ap.filter(o=>o.angle),..._aw.filter(o=>o.angle&&o.type!=='bounce')]){
     const col=obbVsAABBP(obj,p);
     if(!col) continue;
     p.x+=col.nx*col.depth; p.y+=col.ny*col.depth;
     if(col.ny<-0.5){ if(p.vy>0)p.vy=0; p.onGround=true; if(mState.includes(obj))ridRef.v=obj; }
     else if(col.ny>0.5){ if(p.vy<0)p.vy=0; }
     else{ if(col.nx>0&&p.vx<0)p.vx=0; if(col.nx<0&&p.vx>0)p.vx=0; }
+  }
+
+  // Spring bounce
+  for(const sp of (LEVELS[level].springs||[])){
+    let hit=false;
+    if(!sp.angle){
+      if(p.x<sp.x+sp.w&&p.x+p.w>sp.x&&Math.abs(p.y+p.h-sp.y)<=2&&p.vy>-5){ p.y=sp.y-p.h; hit=true; }
+    } else {
+      const col=obbVsAABBP(sp,p);
+      if(col&&col.ny<-0.5&&p.vy>-5){ p.x+=col.nx*col.depth; p.y+=col.ny*col.depth; hit=true; }
+    }
+    if(hit){ p.vy=JUMP*1.8; p.vx=(p.facing||1)*4; p.onGround=false; break; }
   }
 }
 
@@ -553,6 +567,22 @@ function draw(){
   // bouncer spikes
   for(const b of bState){
     drawSpike(b.x,b.y,b.w,b.h,'#ff8800');
+  }
+
+  // springs
+  for(const s of (L.springs||[])){
+    if(s.angle){ctx.save();const cx=s.x+s.w/2,cy=s.y+s.h/2;ctx.translate(cx,cy);ctx.rotate(s.angle);ctx.translate(-cx,-cy);}
+    const coilH=s.h-4,coilCount=4;
+    ctx.fillStyle='#778866'; ctx.fillRect(s.x,s.y+coilH,s.w,4);
+    ctx.strokeStyle='#aaccaa'; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(s.x+s.w/2,s.y+coilH);
+    for(let i=0;i<coilCount;i++){
+      ctx.lineTo(i%2===0?s.x+s.w-3:s.x+3, s.y+coilH-(i+0.5)*(coilH/coilCount));
+      ctx.lineTo(s.x+s.w/2, s.y+coilH-(i+1)*(coilH/coilCount));
+    }
+    ctx.stroke();
+    ctx.fillStyle='#aaccaa'; ctx.fillRect(s.x+2,s.y,s.w-4,3);
+    if(s.angle)ctx.restore();
   }
 
   // portals
