@@ -68,6 +68,15 @@ const LEVELS = [
   playerStart:{x:0,y:314},
   bg:'#0a0a1a', pc:'#4444ff'
 },
+  {
+  platforms:[[560,42,80,16],[29,344,80,16]],
+  moving:[{x:400,y:131,w:25,h:14,x0:null,x1:null,y0:2,y1:359,speed:1.5},{x:510,y:91,w:25,h:14,x0:null,x1:null,y0:0,y1:359,speed:1.5},{x:416,y:42,w:25,h:14,x0:null,x1:null,y0:1,y1:360,speed:1.5},{x:355,y:91,w:25,h:14,x0:null,x1:null,y0:2,y1:358,speed:1.5},{x:369,y:158,w:25,h:14,x0:null,x1:null,y0:2,y1:358,speed:1.5},{x:455,y:277,w:25,h:14,x0:null,x1:null,y0:1,y1:356,speed:1.5},{x:379,y:312,w:25,h:14,x0:null,x1:null,y0:-2,y1:360,speed:1.5},{x:348,y:242,w:25,h:14,x0:null,x1:null,y0:1,y1:359,speed:1.5},{x:486,y:337,w:25,h:14,x0:null,x1:null,y0:0,y1:360,speed:1.5},{x:400,y:337,w:25,h:14,x0:null,x1:null,y0:-5,y1:360,speed:1.5},{x:320,y:14,w:25,h:14,x0:null,x1:null,y0:0,y1:359,speed:1.5},{x:455,y:14,w:25,h:14,x0:null,x1:null,y0:0,y1:361,speed:1.5},{x:314,y:56,w:25,h:14,x0:null,x1:null,y0:0,y1:360,speed:1.5},{x:480,y:228,w:25,h:14,x0:null,x1:null,y0:0,y1:361,speed:1.5},{x:425,y:172,w:25,h:14,x0:null,x1:null,y0:2,y1:360,speed:1.5},{x:149,y:228,w:54,h:14,x0:114,x1:313,y0:null,y1:null,speed:1.5}],
+  walls:[{x:624,y:-6,w:16,h:48},{x:388,y:0,w:16,h:48},{x:470,y:172,w:16,h:48},{x:339,y:277,w:16,h:48},{x:320,y:70,w:16,h:48}],
+  spikes:[{x:88,y:332,w:23,h:12},{x:338,y:265,w:16,h:12}],
+  goal:{x:43,y:312,w:18,h:18},
+  playerStart:{x:584,y:14},
+  bg:'#0a0a1a', pc:'#4444ff'
+},
 ];
 
 
