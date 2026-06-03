@@ -44,8 +44,9 @@
 
           <button class="prop-action-btn move-btn">&#x2725; MOVE</button>
           <button class="prop-action-btn delete-btn">&#x2715; DELETE</button>
+          <button class="prop-action-btn" id="rotate-mode-btn">&#x21BB; ROTATE</button>
 
-          <div style="margin-top:8px; margin-bottom:6px">
+          <div id="dimensions-section" style="margin-top:8px; margin-bottom:6px">
             <div class="prop-name" style="margin-bottom:6px; font-size:6px; color:#888;">DIMENSIONS</div>
             <div class="prop-row">
               <span class="prop-name">W</span>
@@ -54,6 +55,18 @@
             <div class="prop-row" style="margin-top:4px">
               <span class="prop-name">H</span>
               <input class="prop-input" type="number" id="prop-h" value="16" min="8" />
+            </div>
+          </div>
+
+          <!-- Turret extras -->
+          <div class="moving-props" id="turret-extras" style="display:none">
+            <div class="moving-label">TURRET</div>
+            <div style="margin-top:8px">
+              <div class="prop-name" style="margin-bottom:6px">INTERVAL (SEC)</div>
+              <div class="prop-row">
+                <span class="prop-name">INT</span>
+                <input class="prop-input" type="number" id="prop-interval" value="3" min="0.5" step="0.5" />
+              </div>
             </div>
           </div>
 
@@ -97,24 +110,58 @@
       <div class="panel-section">
         <div class="panel-label">Tools</div>
 
-        <button class="tool-btn active" data-tool="mouse">
-          <div class="tool-icon icon-mouse"></div>
-          Mouse
-        </button>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button class="tool-btn active" data-tool="mouse" style="margin-bottom:0;flex:1">
+            <div class="tool-icon icon-mouse"></div>
+            Mouse
+          </button>
+          <button class="tool-btn" id="portal-btn" style="margin-bottom:0;flex:1">
+            <div class="tool-icon icon-portal">
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <circle cx="9" cy="9" r="7.5" fill="none" stroke="#aa44ff" stroke-width="2.5"/>
+                <circle cx="9" cy="9" r="3.5" fill="#aa44ff"/>
+              </svg>
+            </div>
+            Portal
+          </button>
+        </div>
 
-        <button class="tool-btn" data-tool="platform">
-          <div class="tool-icon">
-            <div class="icon-platform"></div>
-          </div>
-          Platform
-        </button>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button class="tool-btn" data-tool="platform" style="margin-bottom:0;flex:1">
+            <div class="tool-icon">
+              <div class="icon-platform"></div>
+            </div>
+            Platform
+          </button>
+          <button class="tool-btn" data-tool="turret" id="turret-btn" style="margin-bottom:0;flex:1">
+            <div class="tool-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <rect x="3" y="10" width="12" height="6" fill="#888"/>
+                <rect x="7" y="4" width="4" height="7" fill="#aaa"/>
+                <rect x="8" y="1" width="6" height="3" fill="#999"/>
+              </svg>
+            </div>
+            Turret
+          </button>
+        </div>
 
-        <button class="tool-btn" data-tool="moving">
-          <div class="tool-icon">
-            <div class="icon-moving"></div>
-          </div>
-          Moving Plat.
-        </button>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button class="tool-btn" data-tool="moving" style="margin-bottom:0;flex:1">
+            <div class="tool-icon">
+              <div class="icon-moving"></div>
+            </div>
+            Moving Plat.
+          </button>
+          <button class="tool-btn" id="bounce-btn" style="margin-bottom:0;flex:1">
+            <div class="tool-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <path d="M2 14 Q9 2 16 14" fill="none" stroke="#00ff41" stroke-width="2"/>
+                <polygon points="9,4 7,9 11,9" fill="#00ff41"/>
+              </svg>
+            </div>
+            Bounce
+          </button>
+        </div>
 
         <button class="tool-btn" data-tool="wall">
           <div class="tool-icon">
@@ -131,6 +178,19 @@
             </svg>
           </div>
           Spikes
+        </button>
+
+        <button class="tool-btn" data-tool="ladder">
+          <div class="tool-icon icon-ladder">
+            <svg width="14" height="18" viewBox="0 0 14 18">
+              <rect x="0" y="0" width="3" height="18" fill="#aa8844"/>
+              <rect x="11" y="0" width="3" height="18" fill="#aa8844"/>
+              <rect x="3" y="3" width="8" height="2" fill="#cc9933"/>
+              <rect x="3" y="8" width="8" height="2" fill="#cc9933"/>
+              <rect x="3" y="13" width="8" height="2" fill="#cc9933"/>
+            </svg>
+          </div>
+          Ladder
         </button>
 
         <button class="tool-btn" data-tool="goal">

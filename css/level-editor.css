@@ -34,7 +34,7 @@ h1 {
 }
 
 .tools-column {
-  width: 140px;
+  width: 220px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -156,6 +156,10 @@ h1 {
 }
 
 .icon-spike svg { display: block; }
+
+.icon-ladder svg { display: block; }
+
+.icon-portal svg { display: block; }
 
 .icon-goal::after {
   content: '★';

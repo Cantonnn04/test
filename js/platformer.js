@@ -77,22 +77,49 @@ const LEVELS = [
   playerStart:{x:584,y:14},
   bg:'#0a0a1a', pc:'#4444ff'
 },
+{
+  platforms:[[88,294,233,16],[165,113,80,16],[224,175,99,16]],
+  walls:[{x:168,y:129,w:16,h:162}],
+  spikes:[{x:275,y:161,w:50,h:12},{x:184,y:282,w:50,h:12}],
+  ladders:[{x:137,y:114,w:28,h:177},{x:246,y:113,w:28,h:60}],
+  goal:{x:290,y:264,w:18,h:18},
+  playerStart:{x:88,y:266},
+  bg:'#0a0a1a', pc:'#4444ff'
+},
+{
+  platforms:[[-4,273,648,16]],
+  walls:[{x:320,y:-2,w:16,h:275},{x:113,y:215,w:30,h:58}],
+  ladders:[{x:68,y:213,w:28,h:60}],
+  portals:[{index:0,color:'#00ff44',surface:'floor',x:278,y:245,w:14,h:28},{index:1,color:'#ff6600',surface:'floor',x:429,y:245,w:14,h:28}],
+  goal:{x:559,y:245,w:18,h:18},
+  playerStart:{x:18,y:245},
+  bg:'#0a0a1a', pc:'#4444ff'
+},
+{
+  platforms:[[9,291,503,16],{x:56,y:218,w:216,h:54,angle:2.64864}],
+  turrets:[{x:324,y:265,w:24,h:24,angle:-1.59688,interval:2}],
+  goal:{x:423,y:262,w:18,h:18},
+  playerStart:{x:14,y:239},
+  bg:'#0a0a1a', pc:'#4444ff'
+},
 ];
 
 
 const SPEED=3.5, JUMP=-9, GRAVITY=0.45;
 const TICK_MS = 1000 / 60;
 let level=0, player, player2=null, keys={}, raf, victory=false, deaths=0, usedNav=false, twoPlayer=false, coopMode=false;
-let mState=[], bState=[], ridingMover=null, ridingMover2=null;
+let mState=[], bState=[], tState=[], ridingMover=null, ridingMover2=null;
+let blockedPortal1=null, blockedPortal2=null;
 let lastTime=null, accumulator=0;
 
 function initMoving(lvl){
   const L=LEVELS[lvl];
   mState=(L.moving||[]).map(m=>({...m,dir:1}));
   bState=(L.bouncers||[]).map(b=>({...b,dir:1}));
+  tState=(L.turrets||[]).map(t=>({...t,timer:Math.round(t.interval*60),projectiles:[]}));
 }
 
-function makePlayer(x,y){ return {x,y,w:24,h:28,vx:0,vy:0,onGround:false}; }
+function makePlayer(x,y){ return {x,y,w:24,h:28,vx:0,vy:0,onGround:false,onLadder:false}; }
 
 function updateNavUI(){
   document.getElementById('nav-label').textContent='LEVEL '+(level+1)+' / '+LEVELS.length;
@@ -107,6 +134,7 @@ function initLevel(lvl){
   ridingMover=null;
   player2=twoPlayer ? makePlayer(L.playerStart.x+30, L.playerStart.y) : null;
   ridingMover2=null;
+  blockedPortal1=null; blockedPortal2=null;
   document.getElementById('lvl').textContent=lvl+1;
   document.getElementById('msg').textContent='';
   initMoving(lvl);
@@ -128,6 +156,33 @@ function navLevel(dir){
 
 function collide(a,b){
   return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;
+}
+
+function _obbCorners(obj){
+  const cx=obj.x+obj.w/2,cy=obj.y+obj.h/2,a=obj.angle,c=Math.cos(a),s=Math.sin(a),hw=obj.w/2,hh=obj.h/2;
+  return [{x:cx-c*hw+s*hh,y:cy-s*hw-c*hh},{x:cx+c*hw+s*hh,y:cy+s*hw-c*hh},
+          {x:cx+c*hw-s*hh,y:cy+s*hw+c*hh},{x:cx-c*hw-s*hh,y:cy-s*hw+c*hh}];
+}
+function _proj(corners,ax,ay){
+  let mn=Infinity,mx=-Infinity;
+  for(const{x,y}of corners){const d=x*ax+y*ay;if(d<mn)mn=d;if(d>mx)mx=d;}
+  return[mn,mx];
+}
+function obbVsAABBP(obj,p){
+  const a=obj.angle,c=Math.cos(a),s=Math.sin(a),oc=_obbCorners(obj);
+  const pc=[{x:p.x,y:p.y},{x:p.x+p.w,y:p.y},{x:p.x+p.w,y:p.y+p.h},{x:p.x,y:p.y+p.h}];
+  let minD=Infinity,nx=0,ny=0;
+  for(const[ax,ay]of[[1,0],[0,1],[c,s],[-s,c]]){
+    const[pn,px]=_proj(pc,ax,ay),[on,ox]=_proj(oc,ax,ay);
+    if(px<=on||ox<=pn)return null;
+    const d=Math.min(px-on,ox-pn);if(d<minD){minD=d;nx=ax;ny=ay;}
+  }
+  if(((p.x+p.w/2)-(obj.x+obj.w/2))*nx+((p.y+p.h/2)-(obj.y+obj.h/2))*ny<0){nx=-nx;ny=-ny;}
+  return{depth:minD,nx,ny};
+}
+function collideOBB(a,b){
+  if(!b.angle)return collide(a,b);
+  return obbVsAABBP(b,a)!==null;
 }
 
 function updateMovers(){
@@ -163,12 +218,12 @@ function updateMovers(){
 
 function allPlatforms(){
   const L=LEVELS[level];
-  const statics=(L.platforms||[]).map(([x,y,w,h])=>({x,y,w,h}));
+  const statics=(L.platforms||[]).map(p=>Array.isArray(p)?{x:p[0],y:p[1],w:p[2],h:p[3]}:p);
   return [...statics,...mState];
 }
 
 function allWalls(){
-  return (LEVELS[level].walls||[]);
+  return [...(LEVELS[level].walls||[]), ...(LEVELS[level].turrets||[])];
 }
 
 function die(p){
@@ -180,18 +235,45 @@ function die(p){
   } else {
     player2.x=L.playerStart.x+30; player2.y=L.playerStart.y; player2.vx=0; player2.vy=0; ridingMover2=null;
   }
+  for(const t of tState) t.projectiles=[];
 }
 
 // Shared physics step — moves one player through the world
-function physicsStep(p, goLeft, goRight, doJump, ridRef){
-  if(goLeft) p.vx=-SPEED;
-  else if(goRight) p.vx=SPEED;
-  else p.vx*=0.8;
-  if(doJump && p.onGround){ p.vy=JUMP; p.onGround=false; }
-  p.vy+=GRAVITY;
+function physicsStep(p, goLeft, goRight, doJump, goUp, goDown, ridRef){
+  const ladders = LEVELS[level].ladders || [];
+  const pcx = p.x + p.w / 2;
+  const nearLadder = ladders.some(l => l.angle
+    ? collideOBB(p, l)
+    : pcx > l.x && pcx < l.x + l.w && p.y + p.h > l.y + 2 && p.y < l.y + l.h - 2
+  );
+  const onLadderTop = !nearLadder && ladders.some(l => !l.angle &&
+    pcx > l.x && pcx < l.x + l.w &&
+    Math.abs(p.y + p.h - l.y) <= 4 && p.onGround
+  );
+  if (nearLadder && (goUp || goDown)) p.onLadder = true;
+  if (onLadderTop && goDown)          p.onLadder = true;
+  if (!nearLadder && !onLadderTop)    p.onLadder = false;
+  if (doJump)                         p.onLadder = false;
+
+  if(p.onLadder){
+    if(goLeft) p.vx=-SPEED; else if(goRight) p.vx=SPEED; else p.vx*=0.8;
+    if(goUp)        p.vy = -SPEED;
+    else if(goDown) p.vy =  SPEED;
+    else            p.vy =  0;
+    if(doJump && p.onGround){ p.vy=JUMP; p.onGround=false; p.onLadder=false; }
+  } else {
+    if(goLeft) p.vx=-SPEED;
+    else if(goRight) p.vx=SPEED;
+    else p.vx*=0.8;
+    if((doJump||goUp) && p.onGround){ p.vy=JUMP; p.onGround=false; }
+    p.vy+=GRAVITY;
+  }
+
+  const _ap=allPlatforms(), _aw=allWalls();
+  const _apA=_ap.filter(o=>!o.angle), _awA=_aw.filter(o=>!o.angle);
 
   p.x+=p.vx;
-  for(const s of [...allPlatforms(),...allWalls()]){
+  for(const s of [..._apA,..._awA]){
     if(p.x<s.x+s.w && p.x+p.w>s.x && p.y+2<s.y+s.h && p.y+p.h-2>s.y){
       if(p.x+p.w/2<s.x+s.w/2) p.x=s.x-p.w; else p.x=s.x+s.w;
       p.vx=0; break;
@@ -201,19 +283,38 @@ function physicsStep(p, goLeft, goRight, doJump, ridRef){
 
   const tb=p.y, bb=p.y+p.h;
   p.y+=p.vy; p.onGround=false; ridRef.v=null;
-  for(const pl of allPlatforms()){
+  for(const pl of _apA){
     if(p.x<pl.x+pl.w && p.x+p.w>pl.x && p.y<pl.y+pl.h && p.y+p.h>pl.y){
       if(p.vy>=0 && bb<=pl.y+1){ p.y=pl.y-p.h; p.vy=0; p.onGround=true; if(mState.includes(pl)) ridRef.v=pl; }
       else if(p.vy<0 && tb>=pl.y+pl.h-1){ p.y=pl.y+pl.h; p.vy=0; }
       break;
     }
   }
-  for(const w of allWalls()){
+  for(const w of _awA){
     if(p.x<w.x+w.w && p.x+p.w>w.x && p.y<w.y+w.h && p.y+p.h>w.y){
       if(p.vy>=0 && bb<=w.y+1){ p.y=w.y-p.h; p.vy=0; p.onGround=true; }
       else if(p.vy<0 && tb>=w.y+w.h-1){ p.y=w.y+w.h; p.vy=0; }
       break;
     }
+  }
+  // Ladder top acts as a platform; player must press down to descend
+  if(!p.onLadder && !goDown){
+    const cx=p.x+p.w/2;
+    for(const l of ladders){
+      if(l.angle) continue;
+      if(cx>l.x && cx<l.x+l.w && p.vy>=0 && bb<=l.y+1 && p.y+p.h>l.y){
+        p.y=l.y-p.h; p.vy=0; p.onGround=true; break;
+      }
+    }
+  }
+  // OBB resolution for rotated objects
+  for(const obj of [..._ap.filter(o=>o.angle),..._aw.filter(o=>o.angle)]){
+    const col=obbVsAABBP(obj,p);
+    if(!col) continue;
+    p.x+=col.nx*col.depth; p.y+=col.ny*col.depth;
+    if(col.ny<-0.5){ if(p.vy>0)p.vy=0; p.onGround=true; if(mState.includes(obj))ridRef.v=obj; }
+    else if(col.ny>0.5){ if(p.vy<0)p.vy=0; }
+    else{ if(col.nx>0&&p.vx<0)p.vx=0; if(col.nx<0&&p.vx>0)p.vx=0; }
   }
 }
 
@@ -258,6 +359,40 @@ function toggleMode(){
   initLevel(level);
 }
 
+function teleportChar(p, exit) {
+  if (exit.surface === 'floor') {
+    p.x = exit.x + exit.w / 2 - p.w / 2;
+    p.y = exit.y + exit.h - p.h;
+  } else if (exit.surface === 'wall-left') {
+    p.x = exit.x - p.w;
+    p.y = exit.y + exit.h / 2 - p.h / 2;
+    p.vx = -(Math.abs(p.vx) || 2);
+  } else if (exit.surface === 'wall-right') {
+    p.x = exit.x + exit.w;
+    p.y = exit.y + exit.h / 2 - p.h / 2;
+    p.vx = Math.abs(p.vx) || 2;
+  } else {
+    p.x = exit.x + exit.w / 2 - p.w / 2;
+    p.y = exit.y + exit.h / 2 - p.h / 2;
+  }
+}
+
+function applyPortals(p, blockedRef) {
+  const portals = LEVELS[level].portals || [];
+  if (blockedRef.v !== null) {
+    const bl = portals.find(q => q.index === blockedRef.v);
+    if (!bl || !collide(p, bl)) blockedRef.v = null;
+  }
+  for (const portal of portals) {
+    if (portal.index === blockedRef.v) continue;
+    if (collide(p, portal)) {
+      const other = portals.find(q => q.index !== portal.index);
+      if (other) { teleportChar(p, other); blockedRef.v = other.index; }
+      break;
+    }
+  }
+}
+
 function update(){
   if(victory) return;
   const L=LEVELS[level];
@@ -268,34 +403,52 @@ function update(){
   //  1P:    WASD + Space + arrows all work for the one player
   //  2P:    P1 = WASD+Space,  P2 = arrows (handled below)
   //  CO-OP: P1 = W (jump only),  P2 = arrows (move only) — one shared character
-  const p1L = coopMode ? keys['ArrowLeft']  : (keys['a']||keys['A']||(!twoPlayer&&keys['ArrowLeft']));
-  const p1R = coopMode ? keys['ArrowRight'] : (keys['d']||keys['D']||(!twoPlayer&&keys['ArrowRight']));
-  const p1J = coopMode ? (keys['w']||keys['W']) : (keys['w']||keys['W']||keys[' ']||(!twoPlayer&&(keys['ArrowUp']||keys['Up'])));
+  const p1L    = coopMode ? keys['ArrowLeft']  : (keys['a']||keys['A']||(!twoPlayer&&keys['ArrowLeft']));
+  const p1R    = coopMode ? keys['ArrowRight'] : (keys['d']||keys['D']||(!twoPlayer&&keys['ArrowRight']));
+  const p1Up   = coopMode ? (keys['w']||keys['W']) : (keys['w']||keys['W']||(!twoPlayer&&(keys['ArrowUp']||keys['Up'])));
+  const p1Down = coopMode ? false : (keys['s']||keys['S']||(!twoPlayer&&keys['ArrowDown']));
+  const p1J    = coopMode ? false : keys[' '];
   const r1={v:ridingMover};
-  physicsStep(player,p1L,p1R,p1J,r1);
+  physicsStep(player,p1L,p1R,p1J,p1Up,p1Down,r1);
   ridingMover=r1.v;
 
+  // Turret tick — advance timers, spawn and move bullets
+  for(const t of tState){
+    t.timer--;
+    if(t.timer<=0){
+      t.timer=Math.round(t.interval*60);
+      const tcx=t.x+t.w/2, tcy=t.y+t.h/2, ang=t.angle||0, spd=4, rad=t.w/2+16;
+      t.projectiles.push({x:tcx+Math.cos(ang)*rad-4, y:tcy+Math.sin(ang)*rad-4, w:8,h:8, vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd});
+    }
+    for(const p of t.projectiles){ p.x+=p.vx; p.y+=p.vy; }
+    t.projectiles=t.projectiles.filter(p=>p.x>-16&&p.x<W+16&&p.y>-16&&p.y<H+16);
+  }
+
   let p1dead=false;
-  for(const s of (L.spikes||[])){ if(collide(player,s)){ die(player); p1dead=true; break; } }
+  for(const s of (L.spikes||[])){ if(collideOBB(player,s)){ die(player); p1dead=true; break; } }
   if(!p1dead) for(const b of bState){ if(collide(player,b)){ die(player); p1dead=true; break; } }
   if(!p1dead && player.y>H+50){ die(player); p1dead=true; }
+  if(!p1dead) for(const t of tState){ for(const proj of t.projectiles){ if(collide(player,proj)){ die(player); p1dead=true; break; } } if(p1dead) break; }
+  if(!p1dead){ const bp1={v:blockedPortal1}; applyPortals(player,bp1); blockedPortal1=bp1.v; }
 
   if(twoPlayer && player2){
     const r2={v:ridingMover2};
-    physicsStep(player2, keys['ArrowLeft'], keys['ArrowRight'], keys['ArrowUp'], r2);
+    physicsStep(player2, keys['ArrowLeft'], keys['ArrowRight'], false, keys['ArrowUp']||keys['Up'], keys['ArrowDown'], r2);
     ridingMover2=r2.v;
 
     let p2dead=false;
-    for(const s of (L.spikes||[])){ if(collide(player2,s)){ die(player2); p2dead=true; break; } }
+    for(const s of (L.spikes||[])){ if(collideOBB(player2,s)){ die(player2); p2dead=true; break; } }
     if(!p2dead) for(const b of bState){ if(collide(player2,b)){ die(player2); p2dead=true; break; } }
     if(!p2dead && player2.y>H+50){ die(player2); p2dead=true; }
+    if(!p2dead) for(const t of tState){ for(const proj of t.projectiles){ if(collide(player2,proj)){ die(player2); p2dead=true; break; } } if(p2dead) break; }
+    if(!p2dead){ const bp2={v:blockedPortal2}; applyPortals(player2,bp2); blockedPortal2=bp2.v; }
 
     if(!p1dead && !p2dead) resolvePlayerCollision();
   }
 
   // Goal: 1P = player reaches it; 2P = both reach it simultaneously
-  const p1g=collide(player,L.goal);
-  const p2g=twoPlayer && player2 && collide(player2,L.goal);
+  const p1g=collideOBB(player,L.goal);
+  const p2g=twoPlayer && player2 && collideOBB(player2,L.goal);
   if(twoPlayer ? (p1g&&p2g) : p1g){
     if(level<LEVELS.length-1){
       level++;
@@ -311,8 +464,8 @@ function update(){
 }
 
 function drawChar(p, col, label){
-  ctx.fillStyle=col; ctx.shadowColor=col; ctx.shadowBlur=10;
-  ctx.fillRect(p.x,p.y,p.w,p.h); ctx.shadowBlur=0;
+  ctx.fillStyle=col;
+  ctx.fillRect(p.x,p.y,p.w,p.h);
   ctx.fillStyle='#fff';
   ctx.fillRect(p.x+6,p.y+7,5,5); ctx.fillRect(p.x+13,p.y+7,5,5);
   ctx.fillStyle='#0a0a0a';
@@ -325,7 +478,6 @@ function drawChar(p, col, label){
 
 function drawSpike(x,y,w,h,color){
   ctx.fillStyle=color;
-  ctx.shadowColor=color; ctx.shadowBlur=6;
   const count=Math.floor(w/10);
   const sw=w/count;
   ctx.beginPath();
@@ -336,7 +488,6 @@ function drawSpike(x,y,w,h,color){
   }
   ctx.closePath();
   ctx.fill();
-  ctx.shadowBlur=0;
 }
 
 function draw(){
@@ -350,15 +501,15 @@ function draw(){
   }
 
   // static platforms
-  ctx.fillStyle=L.pc;
-  ctx.shadowColor=L.pc; ctx.shadowBlur=6;
-  for(const [px,py,pw,ph] of (L.platforms||[])){
-    ctx.fillRect(px,py,pw,ph);
+  for(const _p of (L.platforms||[])){
+    const po=Array.isArray(_p)?{x:_p[0],y:_p[1],w:_p[2],h:_p[3]}:_p;
+    if(po.angle){ctx.save();const cx=po.x+po.w/2,cy=po.y+po.h/2;ctx.translate(cx,cy);ctx.rotate(po.angle);ctx.translate(-cx,-cy);}
+    ctx.fillStyle=L.pc; ctx.fillRect(po.x,po.y,po.w,po.h);
+    if(po.angle)ctx.restore();
   }
 
   // moving platforms — brighter
   ctx.fillStyle='#aaddff';
-  ctx.shadowColor='#aaddff'; ctx.shadowBlur=8;
   for(const m of mState){
     ctx.fillRect(m.x,m.y,m.w,m.h);
     // arrow indicator
@@ -368,14 +519,11 @@ function draw(){
     ctx.fillText(m.x0!==null?'↔':'↕', m.x+m.w/2, m.y+m.h-2);
     ctx.fillStyle='#aaddff';
   }
-  ctx.shadowBlur=0;
 
   // walls
-  ctx.fillStyle='#886622';
-  ctx.shadowColor='#cc9933'; ctx.shadowBlur=6;
   for(const w of (L.walls||[])){
-    ctx.fillRect(w.x,w.y,w.w,w.h);
-    // brick pattern
+    if(w.angle){ctx.save();const cx=w.x+w.w/2,cy=w.y+w.h/2;ctx.translate(cx,cy);ctx.rotate(w.angle);ctx.translate(-cx,-cy);}
+    ctx.fillStyle='#886622'; ctx.fillRect(w.x,w.y,w.w,w.h);
     ctx.fillStyle='#553311';
     for(let row=0;row*12<w.h;row++){
       const off=row%2===0?0:w.w/2;
@@ -383,26 +531,63 @@ function draw(){
         ctx.fillRect(w.x+col+off, w.y+row*12, Math.min(w.w,w.w/2)-1, 11);
       }
     }
-    ctx.fillStyle='#886622';
+    if(w.angle)ctx.restore();
   }
-  ctx.shadowBlur=0;
+
+  // ladders
+  for(const l of (L.ladders||[])){
+    if(l.angle){ctx.save();const cx=l.x+l.w/2,cy=l.y+l.h/2;ctx.translate(cx,cy);ctx.rotate(l.angle);ctx.translate(-cx,-cy);}
+    ctx.fillStyle='#aa8844';
+    ctx.fillRect(l.x,l.y,4,l.h); ctx.fillRect(l.x+l.w-4,l.y,4,l.h);
+    ctx.fillStyle='#cc9933';
+    for(let ry=l.y+4; ry+3<=l.y+l.h; ry+=12){ ctx.fillRect(l.x+4,ry,l.w-8,3); }
+    if(l.angle)ctx.restore();
+  }
 
   // static spikes
   for(const s of (L.spikes||[])){
+    if(s.angle){ctx.save();const cx=s.x+s.w/2,cy=s.y+s.h/2;ctx.translate(cx,cy);ctx.rotate(s.angle);ctx.translate(-cx,-cy);}
     drawSpike(s.x,s.y,s.w,s.h,'#ff2222');
+    if(s.angle)ctx.restore();
   }
   // bouncer spikes
   for(const b of bState){
     drawSpike(b.x,b.y,b.w,b.h,'#ff8800');
   }
 
+  // portals
+  for(const portal of (L.portals||[])){
+    const pcx=portal.x+portal.w/2, pcy=portal.y+portal.h/2;
+    ctx.save();
+    ctx.shadowColor=portal.color; ctx.shadowBlur=14;
+    ctx.strokeStyle=portal.color; ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.ellipse(pcx,pcy,portal.w/2,portal.h/2,0,0,Math.PI*2);
+    ctx.stroke();
+    ctx.fillStyle=portal.color+'33'; ctx.fill();
+    ctx.restore();
+  }
+
+  // turrets and bullets
+  for(const t of tState){
+    const tcx=t.x+t.w/2, tcy=t.y+t.h/2, ta=t.angle||0;
+    ctx.save();
+    if(ta){ ctx.translate(tcx,tcy); ctx.rotate(ta); ctx.translate(-tcx,-tcy); }
+    ctx.fillStyle='#556677'; ctx.fillRect(t.x,t.y,t.w,t.h);
+    ctx.fillStyle='#334455'; ctx.fillRect(t.x+2,t.y+2,t.w-4,t.h-4);
+    ctx.fillStyle='#445566'; ctx.fillRect(t.x+t.w, tcy-3, 16, 6);
+    ctx.fillStyle='#ff3333'; ctx.fillRect(t.x+t.w-8, tcy-3, 6, 6);
+    ctx.restore();
+    ctx.fillStyle='#ff2222';
+    for(const proj of t.projectiles) ctx.fillRect(proj.x,proj.y,proj.w,proj.h);
+  }
+
   // goal
   const g=L.goal;
   ctx.font='bold 22px "Press Start 2P", monospace';
-  ctx.fillStyle='#ffff00'; ctx.shadowColor='#ffff00'; ctx.shadowBlur=18;
+  ctx.fillStyle='#ffff00';
   ctx.textAlign='left';
   ctx.fillText('★', g.x+2, g.y+22);
-  ctx.shadowBlur=0;
   if(twoPlayer){
     ctx.font='6px "Press Start 2P",monospace'; ctx.textAlign='center';
     if(collide(player,g)){   ctx.fillStyle='#ff00ff'; ctx.fillText('P1✓',g.x+14,g.y-2); }
