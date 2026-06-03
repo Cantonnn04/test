@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Brick Breaker — Retro Arcade</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/brickbreaker.css" />
+</head>
+<body>
+  <h1>🧱 BRICK BREAKER</h1>
+
+  <div class="mode-toggle">
+    <button id="btn1p" class="active" onclick="setMode(1)">1 PLAYER</button>
+    <button id="btn2p" onclick="setMode(2)">2 PLAYERS</button>
+  </div>
+
+  <div class="info" id="info1p">Mouse / Arrow keys to move · Click or Space to launch</div>
+  <div class="info" id="info2p" style="display:none">
+    P1 TOP: A/D move · W launch &nbsp;|&nbsp; P2 BOTTOM: ←/→ move · ↑ launch
+  </div>
+
+  <div class="hud" id="hud1p">
+    <span>SCORE: <span id="score1p">0</span></span>
+    <span>LIVES: <span id="lives1p">3</span></span>
+  </div>
+  <div class="hud" id="hud2p" style="display:none">
+    <span style="color:#44aaff">P1 LIVES: <span id="lives1">3</span></span>
+    <span>SCORE: <span id="score2p">0</span></span>
+    <span style="color:#ff4466">P2 LIVES: <span id="lives2">3</span></span>
+  </div>
+
+  <canvas id="c"></canvas>
+  <div id="msg"></div>
+  <a class="back" href="index.html">◀ BACK</a>
+
+  <script src="js/brickbreaker.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+h1 { margin-bottom: 8px; }
+.mode-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
+.mode-toggle button {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 8px 14px;
+  background: #0a0a0a;
+  border: 2px solid #ff00ff;
+  color: #ff00ff;
+  cursor: pointer;
+}
+.mode-toggle button:hover { background: #220022; }
+.mode-toggle button.active { background: #ff00ff; color: #0a0a0a; }
+.info { margin-bottom: 8px; text-align: center; }
+.hud { font-size: 10px; margin-bottom: 8px; color: #ffff00; display: flex; gap: 24px; }
+#msg { margin-top: 12px; }
+.back { margin-top: 14px; }

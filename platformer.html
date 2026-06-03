@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Platformer — Retro Arcade</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/platformer.css" />
+</head>
+<body>
+  <h1>🏃 PLATFORMER</h1>
+  <div class="info" id="info-controls">Arrow keys / WASD · Space/W/Up to jump · R to restart</div>
+  <div class="hud"><span>LEVEL: <span id="lvl">1</span> / <span id="total-lvls">5</span></span><span id="deaths-hud">DEATHS: <span id="deaths">0</span></span></div>
+  <canvas id="c" width="640" height="360"></canvas>
+  <div id="msg"></div>
+  <div class="level-nav">
+    <button class="nav-btn" id="btn-prev" onclick="navLevel(-1)">◀ PREV</button>
+    <span id="nav-label">LEVEL 1 / 5</span>
+    <button class="nav-btn" id="btn-next" onclick="navLevel(1)">NEXT ▶</button>
+    <button class="nav-btn" id="btn-mode" onclick="toggleMode()" style="margin-left:20px">2P MODE</button>
+  </div>
+  <a class="back" href="index.html">◀ BACK</a>
+  <a class="back" href="level-editor.html" style="margin-top:8px">✏ LEVEL EDITOR</a>
+
+  <script src="js/platformer.js"></script>
+</body>
+</html>

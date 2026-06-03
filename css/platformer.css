@@ -1,0 +1,6 @@
+.hud { font-size: 10px; margin-bottom: 10px; color: #ffff00; display:flex; gap:30px; }
+.level-nav { display:flex; align-items:center; gap:14px; margin-top:12px; }
+.nav-btn { font-family:'Press Start 2P',monospace; font-size:9px; color:#ff00ff; background:none; border:2px solid #ff00ff; padding:7px 12px; cursor:pointer; }
+.nav-btn:hover:not(:disabled) { background:#ff00ff; color:#0a0a0a; }
+.nav-btn:disabled { opacity:0.25; cursor:default; }
+#nav-label { font-size:9px; color:#ffff00; min-width:120px; text-align:center; }

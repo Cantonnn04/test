@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pong — Retro Arcade</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/pong.css" />
+</head>
+<body>
+  <h1>🏓 PONG</h1>
+  <div class="controls">
+    <button id="aiBtn" class="toggle-btn" onclick="toggleAI()">VS AI: OFF</button>
+    <span style="font-size:8px;color:#888" id="infoText">W/S — P1 · ↑/↓ — P2 · Space to start</span>
+  </div>
+  <canvas id="c" width="640" height="400"></canvas>
+  <div id="msg">Press SPACE to start</div>
+  <a class="back" href="index.html">◀ BACK</a>
+
+  <script src="js/pong.js"></script>
+</body>
+</html>

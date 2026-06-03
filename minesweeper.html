@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Minesweeper — Retro Arcade</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/minesweeper.css" />
+</head>
+<body>
+  <h1>💣 MINESWEEPER</h1>
+  <div class="info">Left click: reveal · Right click: flag · Click a number with correct flags: chord-reveal</div>
+  <div class="hud">
+    <span>💣 <span id="mineCount">20</span></span>
+    <span>⏱ <span id="timer">0</span>s</span>
+  </div>
+  <div id="grid"></div>
+  <div id="msg"></div>
+  <button class="btn" onclick="initGame()">NEW GAME</button>
+  <a class="back" href="index.html">◀ BACK</a>
+
+  <script src="js/minesweeper.js"></script>
+</body>
+</html>

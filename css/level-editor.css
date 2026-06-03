@@ -1,0 +1,452 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0a;
+  color: #00ff41;
+  font-family: 'Press Start 2P', monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+h1 {
+  color: #ff00ff;
+  font-size: 16px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px #ff00ff;
+}
+
+.editor-layout {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.tools-column {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.controls-column {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#editor-canvas {
+  border: 3px solid #00ff41;
+  box-shadow: 0 0 20px #00ff41;
+  display: block;
+  background: #0a0a1a;
+  cursor: crosshair;
+  flex-shrink: 0;
+}
+
+.panel-section {
+  border: 2px solid #333;
+  padding: 10px;
+}
+
+.panel-label {
+  font-size: 7px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: 2px solid #444;
+  color: #00ff41;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 8px 10px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  text-align: left;
+  transition: border-color 0.1s, background 0.1s;
+}
+
+.tool-btn:last-child { margin-bottom: 0; }
+
+.tool-btn:hover {
+  border-color: #00ff41;
+  background: rgba(0,255,65,0.07);
+}
+
+.tool-btn.active {
+  border-color: #ff00ff;
+  background: rgba(255,0,255,0.12);
+  color: #ff00ff;
+  text-shadow: 0 0 6px #ff00ff;
+}
+
+.tool-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-mouse::after {
+  content: '↖';
+  font-size: 14px;
+  color: inherit;
+}
+
+.icon-platform {
+  background: #4444ff;
+  width: 18px;
+  height: 6px;
+  border: 1px solid #8888ff;
+}
+
+.icon-moving {
+  background: #aaddff;
+  width: 18px;
+  height: 6px;
+  border: 1px solid #ffffff;
+  position: relative;
+}
+
+.icon-moving::after {
+  content: '↔';
+  font-size: 8px;
+  color: #fff;
+  position: absolute;
+  top: -3px;
+  left: 2px;
+}
+
+.icon-wall {
+  background: #886622;
+  width: 12px;
+  height: 16px;
+  border: 1px solid #cc9933;
+}
+
+.icon-spike {
+  width: 18px;
+  height: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-spike svg { display: block; }
+
+.icon-goal::after {
+  content: '★';
+  font-size: 14px;
+  color: #ffff00;
+  text-shadow: 0 0 6px #ffff00;
+}
+
+.icon-spawn::after {
+  content: '▶';
+  font-size: 12px;
+  color: #ff00ff;
+  text-shadow: 0 0 6px #ff00ff;
+}
+
+.reset-btn {
+  width: 100%;
+  background: none;
+  border: 2px solid #ff4444;
+  margin-bottom: 6px;
+  color: #ff4444;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.reset-btn:hover { background: rgba(255,68,68,0.1); }
+
+.test-btn {
+  width: 100%;
+  background: none;
+  border: 2px solid #00bbff;
+  margin-bottom: 6px;
+  color: #00bbff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.test-btn:hover { background: rgba(0,187,255,0.1); }
+.test-btn.active { border-color: #ff4444; color: #ff4444; }
+.test-btn.active:hover { background: rgba(255,68,68,0.1); }
+
+.export-btn {
+  width: 100%;
+  background: none;
+  border: 2px solid #ffff00;
+  color: #ffff00;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 12px;
+  cursor: pointer;
+  text-shadow: 0 0 6px #ffff00;
+  transition: background 0.1s;
+}
+
+.export-btn:hover {
+  background: rgba(255,255,0,0.12);
+}
+
+.props-section {
+  border-color: #ff00ff;
+}
+
+.props-section .panel-label {
+  color: #ff00ff;
+}
+
+.prop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.prop-row:last-child { margin-bottom: 0; }
+
+.prop-name {
+  font-size: 6px;
+  color: #aaa;
+  min-width: 40px;
+}
+
+.prop-input {
+  width: 70px;
+  background: #111;
+  border: 1px solid #555;
+  color: #00ff41;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 4px 6px;
+  text-align: right;
+}
+
+.prop-input:focus {
+  outline: none;
+  border-color: #00ff41;
+}
+
+.prop-action-btn {
+  width: 100%;
+  background: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 7px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  border: 2px solid #555;
+  color: #ccc;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.prop-action-btn:last-child { margin-bottom: 0; }
+
+.prop-action-btn.move-btn {
+  border-color: #00bbff;
+  color: #00bbff;
+}
+
+.prop-action-btn.move-btn:hover,
+.prop-action-btn.move-btn.active {
+  background: rgba(0,187,255,0.12);
+}
+
+.prop-action-btn.delete-btn {
+  border-color: #ff3333;
+  color: #ff3333;
+}
+
+.prop-action-btn.delete-btn:hover {
+  background: rgba(255,51,51,0.12);
+}
+
+.dir-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.dir-btn {
+  flex: 1;
+  background: none;
+  border: 2px solid #555;
+  color: #888;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 5px 2px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.dir-btn.active {
+  border-color: #aaddff;
+  color: #aaddff;
+  background: rgba(170,221,255,0.1);
+}
+
+.moving-props {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+}
+
+.moving-label {
+  font-size: 6px;
+  color: #aaddff;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.no-selection {
+  font-size: 6px;
+  color: #444;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.snap-btn {
+  width: 100%;
+  background: none;
+  border: 2px solid #444;
+  margin-bottom: 6px;
+  color: #666;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  padding: 9px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.snap-btn:hover { border-color: #888; color: #aaa; }
+.snap-btn.active { border-color: #00ff41; color: #00ff41; }
+
+.snap-pill {
+  font-size: 6px;
+  padding: 2px 5px;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: #0e0e0e;
+  border: 2px solid #ffff00;
+  box-shadow: 0 0 30px rgba(255,255,0,0.3);
+  padding: 20px;
+  width: 680px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-title {
+  font-size: 12px;
+  color: #ffff00;
+  text-shadow: 0 0 8px #ffff00;
+}
+
+.modal-warning {
+  font-size: 7px;
+  color: #ff4444;
+  line-height: 1.8;
+}
+
+.modal-code {
+  background: #050505;
+  border: 1px solid #333;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  padding: 12px;
+  resize: none;
+  height: 260px;
+  outline: none;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-btn {
+  flex: 1;
+  background: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 10px;
+  cursor: pointer;
+  border: 2px solid #555;
+  color: #aaa;
+  transition: background 0.1s;
+}
+
+.modal-btn.copy { border-color: #00ff41; color: #00ff41; }
+.modal-btn.copy:hover { background: rgba(0,255,65,0.1); }
+.modal-btn.close { border-color: #ff4444; color: #ff4444; }
+.modal-btn.close:hover { background: rgba(255,68,68,0.1); }
+
+.copy-confirm {
+  font-size: 7px;
+  color: #00ff41;
+  text-align: center;
+  min-height: 14px;
+}
+
+.back {
+  font-size: 9px;
+  color: #00ff41;
+  text-decoration: none;
+  border: 2px solid #00ff41;
+  padding: 8px 16px;
+}
+
+.back:hover { background: #00ff41; color: #0a0a0a; }

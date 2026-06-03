@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Level Editor — Retro Arcade</title>
+  <link rel="stylesheet" href="css/level-editor.css" />
+</head>
+<body>
+
+  <h1>LEVEL EDITOR</h1>
+
+  <div class="editor-layout">
+
+    <!-- Controls column (left of canvas) -->
+    <div class="controls-column">
+
+      <!-- Action buttons -->
+      <div class="panel-section">
+        <div class="panel-label">Actions</div>
+
+        <button class="snap-btn" id="snap-toggle">
+          ⊞ SNAP TO OBJECTS
+          <span class="snap-pill" id="snap-pill">OFF</span>
+        </button>
+
+        <button class="test-btn" id="test-btn">&#x25B6; TEST LEVEL</button>
+
+        <button class="reset-btn" id="reset-btn">&#x2715; RESET CANVAS</button>
+
+        <button class="export-btn">&#x25BC; EXPORT</button>
+      </div>
+
+      <!-- Properties (shown when object selected) -->
+      <div class="panel-section props-section" id="props-panel">
+        <div class="panel-label">Properties</div>
+
+        <!-- No selection state -->
+        <div class="no-selection" id="no-selection-msg">
+          Click an object<br>to edit it
+        </div>
+
+        <!-- Selection controls (hidden until something selected) -->
+        <div id="selection-controls" style="display:none">
+
+          <button class="prop-action-btn move-btn">&#x2725; MOVE</button>
+          <button class="prop-action-btn delete-btn">&#x2715; DELETE</button>
+
+          <div style="margin-top:8px; margin-bottom:6px">
+            <div class="prop-name" style="margin-bottom:6px; font-size:6px; color:#888;">DIMENSIONS</div>
+            <div class="prop-row">
+              <span class="prop-name">W</span>
+              <input class="prop-input" type="number" id="prop-w" value="80" min="8" />
+            </div>
+            <div class="prop-row" style="margin-top:4px">
+              <span class="prop-name">H</span>
+              <input class="prop-input" type="number" id="prop-h" value="16" min="8" />
+            </div>
+          </div>
+
+          <!-- Moving platform extras -->
+          <div class="moving-props" id="moving-extras" style="display:none">
+            <div class="moving-label">MOVING PLATFORM</div>
+
+            <div style="margin-bottom:8px">
+              <div class="prop-name" style="margin-bottom:6px">DIRECTION</div>
+              <div class="dir-toggle">
+                <button class="dir-btn active" data-dir="h">↔</button>
+                <button class="dir-btn" data-dir="v">↕</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="prop-name" style="margin-bottom:6px">DISTANCE</div>
+              <div class="prop-row">
+                <span class="prop-name">MIN</span>
+                <input class="prop-input" type="number" id="prop-dist-min" value="0" min="0" />
+              </div>
+              <div class="prop-row" style="margin-top:4px">
+                <span class="prop-name">MAX</span>
+                <input class="prop-input" type="number" id="prop-dist-max" value="200" min="0" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <a class="back" href="platformer.html">&#x25C4; BACK</a>
+
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="editor-canvas" width="640" height="360"></canvas>
+
+    <!-- Tools column (right of canvas) -->
+    <div class="tools-column">
+      <div class="panel-section">
+        <div class="panel-label">Tools</div>
+
+        <button class="tool-btn active" data-tool="mouse">
+          <div class="tool-icon icon-mouse"></div>
+          Mouse
+        </button>
+
+        <button class="tool-btn" data-tool="platform">
+          <div class="tool-icon">
+            <div class="icon-platform"></div>
+          </div>
+          Platform
+        </button>
+
+        <button class="tool-btn" data-tool="moving">
+          <div class="tool-icon">
+            <div class="icon-moving"></div>
+          </div>
+          Moving Plat.
+        </button>
+
+        <button class="tool-btn" data-tool="wall">
+          <div class="tool-icon">
+            <div class="icon-wall"></div>
+          </div>
+          Wall
+        </button>
+
+        <button class="tool-btn" data-tool="spike">
+          <div class="tool-icon icon-spike">
+            <svg width="18" height="14" viewBox="0 0 18 14">
+              <polygon points="0,14 4.5,0 9,14" fill="#ff2222"/>
+              <polygon points="9,14 13.5,0 18,14" fill="#ff2222"/>
+            </svg>
+          </div>
+          Spikes
+        </button>
+
+        <button class="tool-btn" data-tool="goal">
+          <div class="tool-icon icon-goal"></div>
+          Goal
+        </button>
+
+        <button class="tool-btn" data-tool="spawn">
+          <div class="tool-icon icon-spawn"></div>
+          Spawn
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Export modal -->
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal-box">
+      <div class="modal-title">&#x25BC; EXPORT LEVEL CODE</div>
+      <div class="modal-warning" id="export-warnings"></div>
+      <textarea class="modal-code" id="export-code" readonly spellcheck="false"></textarea>
+      <div class="copy-confirm" id="copy-confirm"></div>
+      <div class="modal-actions">
+        <button class="modal-btn copy" id="copy-btn">&#x2398; COPY TO CLIPBOARD</button>
+        <button class="modal-btn close" id="close-modal-btn">&#x2715; CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/level-editor.js"></script>
+
+</body>
+</html>

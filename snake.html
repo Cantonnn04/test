@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Snake — Retro Arcade</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/snake.css" />
+</head>
+<body>
+  <h1>🐍 SNAKE</h1>
+
+  <div class="controls">
+    <button id="modeBtn" class="toggle-btn" onclick="toggleMode()">1P MODE</button>
+    <span id="infoText" class="info">Arrow keys or WASD to move</span>
+  </div>
+
+  <div id="score">SCORE: 0</div>
+  <canvas id="c" width="400" height="400"></canvas>
+  <div id="msg">Press any key to start</div>
+
+  <div class="legend" id="legend1p">
+    <span><div class="dot" style="background:#00ff41"></div> Snake</span>
+    <span><div class="dot" style="background:#ff4444"></div> Apple</span>
+  </div>
+  <div class="legend" id="legend2p" style="display:none">
+    <span><div class="dot" style="background:#00ff41"></div> P1 (WASD)</span>
+    <span><div class="dot" style="background:#00aaff"></div> P2 (Arrows)</span>
+    <span><div class="dot" style="background:#ff4444"></div> Apple</span>
+  </div>
+
+  <a class="back" href="index.html">◀ BACK</a>
+
+  <script src="js/snake.js"></script>
+</body>
+</html>
