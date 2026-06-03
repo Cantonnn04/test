@@ -1210,7 +1210,7 @@ function tPhysicsStep() {
     const angle  = sp.angle || 0;
     const topNx  = Math.sin(angle);           // spring's top-face normal in world space
     const topNy  = -Math.cos(angle);
-    const launch = Math.abs(T_JUMP) * (angle ? 1.8 : 1.3);
+    const launch = Math.abs(T_JUMP) * (angle ? 1.8 : 1.4);
 
     let hit = false;
     if (!angle) {
